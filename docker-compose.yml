@@ -7,14 +7,14 @@ services:
     depends_on:
       - stats-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:7070/stat
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:7071/stat
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
 
   stats-db:
     image: postgres:14-alpine
     ports:
-      - "7070:7070"
+      - "7071:7071"
     environment:
       - POSTGRES_DB=stat
       - POSTGRES_USER=root
@@ -26,9 +26,15 @@ services:
       - ewm-db
     ports:
       - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:7072/stat
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
 
   ewm-db:
     image: postgres:14-alpine
+    ports:
+      - "7072:7072"
     environment:
       - POSTGRES_DB=ewm
       - POSTGRES_USER=root
