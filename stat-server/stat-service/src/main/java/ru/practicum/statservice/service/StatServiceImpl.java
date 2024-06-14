@@ -19,7 +19,7 @@ public class StatServiceImpl implements StatService {
 
     private final StatServiceRepository statServiceRepository;
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional()
     @Override
     public EndpointHitDto postEndpointHit(EndpointHitDto endpointHitDto) {
         EndpointHit endpointHit = EndPointHitMapper.createEndPointHit(endpointHitDto);
