@@ -13,6 +13,8 @@ services:
 
   stats-db:
     image: postgres:14-alpine
+    volumes:
+      - /var/lib/postgresql/data/
     ports:
       - "6541:5432"
     environment:
@@ -24,6 +26,7 @@ services:
     build: ./ewm-server
     depends_on:
       - ewm-db
+      - stats-server
     ports:
       - "8080:8080"
     environment:
@@ -33,6 +36,8 @@ services:
 
   ewm-db:
     image: postgres:14-alpine
+    volumes:
+      - /var/lib/postgresql/data/
     ports:
       - "6542:5432"
     environment:
