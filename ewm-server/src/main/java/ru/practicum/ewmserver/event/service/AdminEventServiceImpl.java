@@ -5,7 +5,6 @@ import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewmserver.category.model.Category;
 import ru.practicum.ewmserver.category.storage.CategoryRepository;

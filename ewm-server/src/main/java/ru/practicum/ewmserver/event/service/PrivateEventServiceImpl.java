@@ -3,7 +3,6 @@ package ru.practicum.ewmserver.event.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewmserver.category.model.Category;
 import ru.practicum.ewmserver.category.storage.CategoryRepository;
