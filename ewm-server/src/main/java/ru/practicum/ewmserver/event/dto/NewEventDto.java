@@ -12,6 +12,7 @@ import ru.practicum.statdto.dto.Constants;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
@@ -38,6 +39,7 @@ public class NewEventDto {
     @NotNull
     private final Location location;
     private Boolean paid = false;
+    @PositiveOrZero
     private int participantLimit = 0;
     private Boolean requestModeration = true;
     @NotBlank
