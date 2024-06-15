@@ -61,7 +61,7 @@ public class PublicEventServiceImpl implements PublicEventService {
         }
         final PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
         final Page<Event> events;
-        if (categories.isEmpty()) {
+        if (categories != null && categories.isEmpty()) {
             categories = null;
         }
         if (!paid) {
