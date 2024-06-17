@@ -11,8 +11,10 @@ import ru.practicum.ewmserver.event.model.Location;
 import ru.practicum.ewmserver.user.dto.UserShortDto;
 import ru.practicum.statdto.dto.Constants;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Data
@@ -22,8 +24,10 @@ import java.time.LocalDateTime;
 public class EventFullDto {
     private final int id;
     @NotBlank
+    @Size(max = 2000)
     private final String annotation;
     @NotBlank
+    @Size(max = 7000)
     private final String description;
     @NotNull
     private final CategoryDto category;
@@ -45,6 +49,7 @@ public class EventFullDto {
     private final Boolean requestModeration;
     private final EventState state;
     @NotBlank
+    @Size(max = 255)
     private final String title;
     private final int views;
 }
