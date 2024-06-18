@@ -10,9 +10,12 @@ import ru.practicum.ewmserver.error.exception.DataConflictException;
 import ru.practicum.ewmserver.error.exception.EntityNotFoundException;
 import ru.practicum.ewmserver.error.exception.InvalidRequestException;
 import ru.practicum.ewmserver.event.dto.*;
+import ru.practicum.ewmserver.event.mapper.CommentMapper;
 import ru.practicum.ewmserver.event.mapper.EventMapper;
+import ru.practicum.ewmserver.event.model.Comment;
 import ru.practicum.ewmserver.event.model.Event;
 import ru.practicum.ewmserver.event.model.EventState;
+import ru.practicum.ewmserver.event.storage.CommentRepository;
 import ru.practicum.ewmserver.event.storage.EventRepository;
 import ru.practicum.ewmserver.request.dto.ParticipationRequestDto;
 import ru.practicum.ewmserver.request.mapper.RequestMapper;
@@ -35,6 +38,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -212,4 +216,81 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         return RequestMapper.createEventRequestStatusUpdateResult(requestRepository.saveAll(requests));
     }
 
+    @Override
+    @Transactional
+    public CommentDto postComment(CommentRequest commentRequest, int userId, int eventId) {
+        final User userFromDb = userRepository.findById(userId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException(
+                                String.format(USER_NOT_FOUND_BY_ID, userId)
+                        )
+                );
+        final Event eventFromDb = eventRepository.findById(eventId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException(
+                                String.format(EVENT_NOT_FOUND_BY_ID, eventId)
+                        )
+                );
+        if (!eventFromDb.getState().equals(EventState.PUBLISHED)) {
+            throw new DataConflictException(COMMENT_NOT_PUBLISHED_EVENT);
+        }
+        final Comment comment = CommentMapper.createComment(commentRequest, eventFromDb, userFromDb);
+
+        return CommentMapper.createCommentDto(commentRepository.save(comment));
+    }
+
+    @Override
+    @Transactional
+    public CommentDto patchComment(CommentRequest commentRequest, int userId, int eventId, int commentId) {
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException(String.format(USER_NOT_FOUND_BY_ID, userId));
+        }
+        if (!eventRepository.existsById(eventId)) {
+            throw new EntityNotFoundException(String.format(EVENT_NOT_FOUND_BY_ID, eventId));
+        }
+        final Comment commentFromDb = commentRepository.findById(commentId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException(String.format(COMMENT_NOT_FOUND_BY_ID, commentId))
+                );
+        if (commentFromDb.getAuthor().getId() != userId) {
+            throw new DataConflictException(String.format(NOT_OWNER_CHANGES_COMMENT, userId, commentId));
+        }
+        if (commentRequest.getText() != null) {
+            commentFromDb.setText(commentRequest.getText());
+        }
+        return CommentMapper.createCommentDto(commentRepository.save(commentFromDb));
+    }
+
+    @Override
+    @Transactional
+    public void deleteComment(int userId, int eventId, int commentId) {
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException(String.format(USER_NOT_FOUND_BY_ID, userId));
+        }
+        if (!eventRepository.existsById(eventId)) {
+            throw new EntityNotFoundException(String.format(EVENT_NOT_FOUND_BY_ID, eventId));
+        }
+        final Comment commentFromDb = commentRepository.findById(commentId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException(String.format(COMMENT_NOT_FOUND_BY_ID, commentId)));
+        if (commentFromDb.getAuthor().getId() != userId) {
+            throw new DataConflictException(String.format(NOT_OWNER_CHANGES_COMMENT, userId, commentId));
+        }
+        commentRepository.deleteById(commentId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CommentDto> getComments(int userId, int eventId, int from, int size) {
+        final PageRequest pageRequest = PageRequest.of(from > 0 ? from / size : 0, size);
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException(String.format(USER_NOT_FOUND_BY_ID, userId));
+        }
+        if (!eventRepository.existsById(eventId)) {
+            throw new EntityNotFoundException(String.format(EVENT_NOT_FOUND_BY_ID, eventId));
+        }
+        return commentRepository.findAll(pageRequest).stream()
+                .map(CommentMapper::createCommentDto)
+                .collect(Collectors.toList());
+    }
 }

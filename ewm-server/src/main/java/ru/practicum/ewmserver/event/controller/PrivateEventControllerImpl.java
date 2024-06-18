@@ -3,6 +3,7 @@ package ru.practicum.ewmserver.event.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.ewmserver.event.dto.CommentDto;
+import ru.practicum.ewmserver.event.dto.CommentRequest;
 import ru.practicum.ewmserver.event.dto.EventFullDto;
 import ru.practicum.ewmserver.event.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.ewmserver.event.dto.EventRequestStatusUpdateResult;
@@ -71,5 +74,37 @@ public class PrivateEventControllerImpl {
                                                         @PathVariable @PositiveOrZero int userId,
                                                         @PathVariable @PositiveOrZero int eventId) {
         return privateEventService.patchRequests(eventRequestStatusUpdateRequest, userId, eventId);
+    }
+
+    @PostMapping("/{eventId}/comments")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentDto postComment(@RequestBody @Valid CommentRequest commentRequest,
+                                  @PathVariable @PositiveOrZero int userId,
+                                  @PathVariable @PositiveOrZero int eventId) {
+        return privateEventService.postComment(commentRequest, userId, eventId);
+    }
+
+    @PatchMapping("/{eventId}/comments/{commentId}")
+    public CommentDto patchComment(@RequestBody @Valid CommentRequest commentRequest,
+                                   @PathVariable @PositiveOrZero int userId,
+                                   @PathVariable @PositiveOrZero int eventId,
+                                   @PathVariable @PositiveOrZero int commentId) {
+        return privateEventService.patchComment(commentRequest, userId, eventId, commentId);
+    }
+
+    @DeleteMapping("/{eventId}/comments/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteComment(@PathVariable @PositiveOrZero int userId,
+                              @PathVariable @PositiveOrZero int eventId,
+                              @PathVariable @PositiveOrZero int commentId) {
+        privateEventService.deleteComment(userId, eventId, commentId);
+    }
+
+    @GetMapping("/{eventId}/comments")
+    public List<CommentDto> getComments(@PathVariable @PositiveOrZero int userId,
+                                        @PathVariable @PositiveOrZero int eventId,
+                                        @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                        @RequestParam(defaultValue = "10") @Positive int size) {
+        return privateEventService.getComments(userId, eventId, from, size);
     }
 }
