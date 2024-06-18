@@ -15,6 +15,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -51,4 +52,5 @@ public class EventFullDto {
     @Size(max = 255)
     private final String title;
     private final int views;
+    private List<CommentDto> comments;
 }

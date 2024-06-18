@@ -22,14 +22,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(force = true)
 public class NewEventDto {
     @NotBlank
-    @NotNull
     @Size(min = 20, message = ErrorStrings.TOO_SHORT)
     @Size(max = 2000, message = ErrorStrings.TOO_LONG)
     private final String annotation;
     @Positive
     private final int category;
     @NotBlank
-    @NotNull
     @Size(min = 20, message = ErrorStrings.TOO_SHORT)
     @Size(max = 7000, message = ErrorStrings.TOO_LONG)
     private final String description;
@@ -43,7 +41,6 @@ public class NewEventDto {
     private int participantLimit = 0;
     private Boolean requestModeration = true;
     @NotBlank
-    @NotNull
     @Size(min = 3, message = ErrorStrings.TOO_SHORT)
     @Size(max = 120, message = ErrorStrings.TOO_LONG)
     private final String title;
